@@ -507,20 +507,67 @@ function LogoLockup({
   );
 }
 
-// ─── SVG EXPORT ───────────────────────────────────────────────────────────────
+// ─── MARK SVG STRING (transparent bg, square=220, gap=20 → 480×480 canvas) ───
+function markSVGString(colors: C4, softness: number) {
+  const sq = 220;
+  const gap = 20;
+  const pad = 10;
+  const total = pad * 2 + sq * 2 + gap;
+  const r = Math.round((softness / 100) * sq * 0.5);
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${total} ${total}" width="${total}" height="${total}">
+  <rect x="${pad}" y="${pad}" width="${sq}" height="${sq}" rx="${r}" fill="${colors[0]}"/>
+  <rect x="${pad+sq+gap}" y="${pad}" width="${sq}" height="${sq}" rx="${r}" fill="${colors[1]}"/>
+  <rect x="${pad}" y="${pad+sq+gap}" width="${sq}" height="${sq}" rx="${r}" fill="${colors[2]}"/>
+  <rect x="${pad+sq+gap}" y="${pad+sq+gap}" width="${sq}" height="${sq}" rx="${r}" fill="${colors[3]}"/>
+</svg>`;
+}
+
+// ─── EXPORT SVG (mark only, transparent) ─────────────────────────────────────
+function exportMarkSVG(colors: C4, softness: number) {
+  const svg = markSVGString(colors, softness);
+  const blob = new Blob([svg], { type: "image/svg+xml" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url; a.download = "iswap-mark.svg"; a.click();
+  URL.revokeObjectURL(url);
+}
+
+// ─── EXPORT PNG (mark only, transparent, 1024×1024) ──────────────────────────
+function exportMarkPNG(colors: C4, softness: number) {
+  const svgStr = markSVGString(colors, softness);
+  const size = 1024;
+  const img = new Image();
+  const blob = new Blob([svgStr], { type: "image/svg+xml" });
+  const url = URL.createObjectURL(blob);
+  img.onload = () => {
+    const canvas = document.createElement("canvas");
+    canvas.width = size; canvas.height = size;
+    const ctx = canvas.getContext("2d")!;
+    ctx.clearRect(0, 0, size, size);
+    ctx.drawImage(img, 0, 0, size, size);
+    URL.revokeObjectURL(url);
+    canvas.toBlob(pngBlob => {
+      if (!pngBlob) return;
+      const pngUrl = URL.createObjectURL(pngBlob);
+      const a = document.createElement("a");
+      a.href = pngUrl; a.download = "iswap-mark.png"; a.click();
+      URL.revokeObjectURL(pngUrl);
+    }, "image/png");
+  };
+  img.src = url;
+}
+
+// ─── LEGACY full lockup SVG export ───────────────────────────────────────────
 function exportSVG(colors: C4, softness: number) {
   const r = Math.round((softness / 100) * 60 * 0.5);
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 120" width="360" height="120">
   <defs><style>@import url('https://fonts.googleapis.com/css2?family=Inter:wght@800');</style></defs>
-  <!-- Logo Mark -->
   <rect x="12" y="12" width="44" height="44" rx="${r}" fill="${colors[0]}"/>
   <rect x="60" y="12" width="44" height="44" rx="${r}" fill="${colors[1]}"/>
   <rect x="12" y="60" width="44" height="44" rx="${r}" fill="${colors[2]}"/>
   <rect x="60" y="60" width="44" height="44" rx="${r}" fill="${colors[3]}"/>
-  <!-- Wordmark: custom i -->
   <rect x="128" y="16" width="14" height="14" rx="4" fill="${colors[0]}"/>
   <rect x="132" y="36" width="6" height="64" rx="3" fill="#0E0E10"/>
-  <!-- Swap text (requires Inter font) -->
   <text x="148" y="98" font-family="Inter,sans-serif" font-size="72" font-weight="800" letter-spacing="-3" fill="#0E0E10">Swap</text>
 </svg>`;
   const blob = new Blob([svg], { type: "image/svg+xml" });
@@ -582,16 +629,28 @@ export default function ExplorePage() {
             <label style={{ fontSize: 13, color: "#666", fontWeight: 500 }}>Softness</label>
             <input type="range" min={0} max={100} value={softness}
               onChange={e => setSoftness(Number(e.target.value))}
-              style={{ width: 100 }} />
+              style={{ width: 120 }} />
             <span style={{ fontFamily: "'Space Mono',monospace", fontSize: 11, color: "#999", width: 28 }}>{softness}%</span>
+
+            {/* export mark SVG */}
             <button
-              onClick={() => exportSVG(colors, softness)}
+              onClick={() => exportMarkSVG(colors, softness)}
               style={{
                 background: "#0E0E10", color: "#F4F2EC", border: "none",
                 borderRadius: 8, padding: "8px 14px", fontSize: 12, fontWeight: 600,
                 cursor: "pointer", letterSpacing: "0.02em",
               }}
-            >↓ Export SVG</button>
+            >↓ SVG</button>
+
+            {/* export mark PNG 1024×1024 */}
+            <button
+              onClick={() => exportMarkPNG(colors, softness)}
+              style={{
+                background: colors[0], color: "#fff", border: "none",
+                borderRadius: 8, padding: "8px 14px", fontSize: 12, fontWeight: 600,
+                cursor: "pointer", letterSpacing: "0.02em",
+              }}
+            >↓ PNG 1024</button>
           </div>
         </div>
 
@@ -656,6 +715,90 @@ export default function ExplorePage() {
               </div>
             </button>
           ))}
+        </div>
+      </section>
+
+      {/* ════════════════════════════════════════════════════
+          EXPORT YOUR LOGO
+      ════════════════════════════════════════════════════ */}
+      <section style={{ padding: "0 48px 64px" }}>
+        <div style={{
+          background: "#0E0E10", borderRadius: 24, padding: "40px 48px",
+          display: "flex", alignItems: "center", gap: 48, flexWrap: "wrap",
+        }}>
+          {/* live big mark preview */}
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 16, flexShrink: 0 }}>
+            <div style={{
+              display: "grid", gridTemplateColumns: "1fr 1fr",
+              gap: Math.round(softness * 0.06 + 8),
+              background: "transparent",
+            }}>
+              {colors.map((c, i) => {
+                const sq = 88;
+                const r = Math.round((softness / 100) * sq * 0.5);
+                return <div key={i} style={{ width: sq, height: sq, borderRadius: r, background: c, transition: "all 0.2s" }} />;
+              })}
+            </div>
+            <div style={{ display: "flex", gap: 6 }}>
+              {colors.map((c, i) => (
+                <div key={i} style={{ width: 18, height: 18, borderRadius: 4, background: c }} />
+              ))}
+            </div>
+          </div>
+
+          {/* info + controls */}
+          <div style={{ flex: 1, minWidth: 240 }}>
+            <div style={{ fontFamily: "'Space Mono',monospace", fontSize: 10, color: "#666", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 8 }}>
+              Export Logo Mark
+            </div>
+            <h3 style={{ fontSize: 26, fontWeight: 800, color: "#F4F2EC", letterSpacing: "-0.5px", marginBottom: 4 }}>
+              {P50[activePal].name}
+            </h3>
+            <div style={{ display: "flex", gap: 6, marginBottom: 20 }}>
+              {colors.map((c, i) => (
+                <span key={i} style={{ fontFamily: "'Space Mono',monospace", fontSize: 9, color: "#888", background: "#ffffff12", padding: "3px 7px", borderRadius: 4 }}>{c}</span>
+              ))}
+            </div>
+
+            {/* softness control */}
+            <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 24 }}>
+              <span style={{ fontSize: 13, color: "#888", fontWeight: 500, whiteSpace: "nowrap" }}>Border radius</span>
+              <input type="range" min={0} max={100} value={softness}
+                onChange={e => setSoftness(Number(e.target.value))}
+                style={{ flex: 1 }} />
+              <span style={{ fontFamily: "'Space Mono',monospace", fontSize: 11, color: "#F4F2EC", width: 30, textAlign: "right" }}>{softness}%</span>
+            </div>
+
+            {/* export buttons */}
+            <div style={{ display: "flex", gap: 10 }}>
+              <button
+                onClick={() => exportMarkSVG(colors, softness)}
+                style={{
+                  flex: 1, padding: "13px 0", border: "2px solid #ffffff30", background: "transparent",
+                  color: "#F4F2EC", borderRadius: 10, fontSize: 14, fontWeight: 700,
+                  cursor: "pointer", letterSpacing: "0.02em", transition: "background .15s",
+                }}
+                onMouseEnter={e => (e.currentTarget.style.background = "#ffffff15")}
+                onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
+              >
+                ↓ SVG · Transparent
+              </button>
+              <button
+                onClick={() => exportMarkPNG(colors, softness)}
+                style={{
+                  flex: 1, padding: "13px 0", border: "none",
+                  background: colors[0], color: "#fff",
+                  borderRadius: 10, fontSize: 14, fontWeight: 700,
+                  cursor: "pointer", letterSpacing: "0.02em",
+                }}
+              >
+                ↓ PNG 1024×1024
+              </button>
+            </div>
+            <p style={{ fontSize: 11, color: "#555", marginTop: 10, lineHeight: 1.5 }}>
+              Both files have a <strong style={{ color: "#888" }}>transparent background</strong> — ready to drop into Instagram, Figma, Canva, or anywhere else.
+            </p>
+          </div>
         </div>
       </section>
 
