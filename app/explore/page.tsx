@@ -14,58 +14,67 @@ const Ci = (cx: number, cy: number, rad: number, c: string, k = 0) =>
 const W = ({ children, size = 80 }: { children: React.ReactNode; size?: number }) =>
   <svg viewBox="0 0 80 80" width={size} height={size}>{children}</svg>;
 
-// ─── 50 PALETTES ──────────────────────────────────────────────────────────────
+// ─── 50 PALETTES — warm, vibrant, no purple, no white/light, no neon ─────────
 const P50: { id: number; name: string; c: C4 }[] = [
-  { id:  1, name: "Baghdad Sunset",    c: ["#FF4D00","#FF0080","#FFD600","#8000FF"] },
-  { id:  2, name: "Desert Fire",       c: ["#FF3300","#FF8C00","#CC0044","#6600CC"] },
-  { id:  3, name: "Neon Souk",         c: ["#FF00FF","#00FF88","#FF6600","#00BFFF"] },
-  { id:  4, name: "Electric Storm",    c: ["#00BFFF","#7B68EE","#FFD700","#FF1493"] },
-  { id:  5, name: "Mango Thunder",     c: ["#FF6B00","#FFCA28","#D500F9","#00E5FF"] },
-  { id:  6, name: "Tigris Deep",       c: ["#0047AB","#00CED1","#9400D3","#FF4500"] },
-  { id:  7, name: "Midnight Rave",     c: ["#9400D3","#FF1493","#00FFFF","#FFD700"] },
-  { id:  8, name: "Plasma Wave",       c: ["#00FFFF","#BF00FF","#FF1493","#39FF14"] },
-  { id:  9, name: "Solar Flare",       c: ["#FFBE0B","#FB5607","#FF006E","#8338EC"] },
-  { id: 10, name: "Spice Market",      c: ["#E25822","#F5A623","#C0392B","#6C3483"] },
-  { id: 11, name: "Arcade Blast",      c: ["#8B00FF","#FFD700","#FF4500","#00CED1"] },
-  { id: 12, name: "Aurora",            c: ["#00FF7F","#00BFFF","#9400D3","#FF1493"] },
-  { id: 13, name: "Circuit Board",     c: ["#00F5D4","#00BBF9","#F15BB5","#9B5DE5"] },
-  { id: 14, name: "Candy Drop",        c: ["#F72585","#7209B7","#3A0CA3","#4CC9F0"] },
-  { id: 15, name: "Retro Future",      c: ["#FF006E","#FFBE0B","#8338EC","#3A86FF"] },
-  { id: 16, name: "Cyber Punk",        c: ["#00FFFF","#FF00FF","#FFD700","#FF4500"] },
-  { id: 17, name: "Summer Crash",      c: ["#FF3366","#FF9900","#00DDFF","#9900FF"] },
-  { id: 18, name: "Kite Festival",     c: ["#00E5FF","#69F0AE","#FF6D00","#D500F9"] },
-  { id: 19, name: "Graffiti Wall",     c: ["#FF1744","#FF9100","#00E5FF","#76FF03"] },
-  { id: 20, name: "Acid Dream",        c: ["#AA00FF","#FF6D00","#FFD600","#00E5FF"] },
-  { id: 21, name: "Lava Lamp",         c: ["#FF4500","#9400D3","#FF1493","#FF9500"] },
-  { id: 22, name: "Tropical Thunder",  c: ["#7FFF00","#FF69B4","#FF8C00","#1E90FF"] },
-  { id: 23, name: "Gambit",            c: ["#4B0082","#C71585","#FF8C00","#00CED1"] },
-  { id: 24, name: "Skate Park",        c: ["#E63946","#FFBE0B","#06D6A0","#118AB2"] },
-  { id: 25, name: "Fizz Pop",          c: ["#FF6347","#FFD700","#7B68EE","#00FA9A"] },
-  { id: 26, name: "Baghdad Techno",    c: ["#00F0FF","#FF00A8","#FF6600","#7700FF"] },
-  { id: 27, name: "Deep Space",        c: ["#3A0CA3","#7209B7","#F72585","#4CC9F0"] },
-  { id: 28, name: "Wild Thing",        c: ["#FF0099","#FFCC00","#00FF66","#0099FF"] },
-  { id: 29, name: "Game On",           c: ["#FF1744","#651FFF","#00E5FF","#76FF03"] },
-  { id: 30, name: "Clash",             c: ["#FF4400","#FFCC00","#00AAFF","#CC00FF"] },
-  { id: 31, name: "Phosphor",          c: ["#80FF00","#00FF9F","#FF0099","#9900FF"] },
-  { id: 32, name: "Midnight Mango",    c: ["#FF6200","#FFCA00","#CC00FF","#002BFF"] },
-  { id: 33, name: "Acid Test",         c: ["#CCFF00","#FF00CC","#00CCFF","#FF6600"] },
-  { id: 34, name: "Power Surge",       c: ["#FF0040","#FF6B00","#7700FF","#00DDFF"] },
-  { id: 35, name: "Rave Mode",         c: ["#FF006E","#3A86FF","#FFBE0B","#38B000"] },
-  { id: 36, name: "Neo Baghdad",       c: ["#FF3300","#FF9900","#9900FF","#00CCFF"] },
-  { id: 37, name: "Velocity",          c: ["#FF3D00","#FF9100","#00E5FF","#651FFF"] },
-  { id: 38, name: "Danger Zone",       c: ["#FF2200","#FFCC00","#FF0066","#0066FF"] },
-  { id: 39, name: "Mosul Mosaic",      c: ["#E63946","#457B9D","#F4A261","#2A9D8F"] },
-  { id: 40, name: "Prism Break",       c: ["#FF4500","#FFD700","#00CED1","#9400D3"] },
-  { id: 41, name: "Full Send",         c: ["#FF0055","#FF7700","#00FFAA","#5500FF"] },
-  { id: 42, name: "Digital Bloom",     c: ["#FF00FF","#00FF88","#FF8800","#0088FF"] },
-  { id: 43, name: "Studio Fire",       c: ["#FF3300","#FF9900","#0099FF","#9900CC"] },
-  { id: 44, name: "Final Boss",        c: ["#FF0022","#FF6600","#9900FF","#0099FF"] },
-  { id: 45, name: "Turbo Mode",        c: ["#FF0066","#FF7A00","#00D9A6","#4400FF"] },
-  { id: 46, name: "Overthrow",         c: ["#FF2200","#FF8800","#0088FF","#8800FF"] },
-  { id: 47, name: "Hot Take",          c: ["#FF1F5A","#FF9500","#00D9FF","#5200FF"] },
-  { id: 48, name: "Baghdad Blue",      c: ["#003F88","#0077B6","#FFB703","#FB8500"] },
-  { id: 49, name: "Ignite",            c: ["#FF0A54","#FFBE0B","#118AB2","#06D6A0"] },
-  { id: 50, name: "Psychedelic",       c: ["#FF6BFF","#6BFFB8","#FFD66B","#6B8AFF"] },
+  // ── close to original ───────────────────────────────────────────────────────
+  { id:  1, name: "Baghdad Original",  c: ["#E8513C","#F0A830","#4F63D2","#3DC87A"] },
+  { id:  2, name: "Tigris Sunrise",    c: ["#FF5733","#FFAA00","#1565C0","#27AE60"] },
+  { id:  3, name: "Euphrates",         c: ["#EF233C","#FFBE0B","#023E8A","#38B000"] },
+  { id:  4, name: "Souk at Noon",      c: ["#FF4E29","#FFC300","#0096C7","#06C270"] },
+  { id:  5, name: "Basra Port",        c: ["#FF4757","#FFA502","#2F86EB","#2ED573"] },
+  // ── warm dominant ───────────────────────────────────────────────────────────
+  { id:  6, name: "Desert Spice",      c: ["#D62828","#F4A261","#457B9D","#2A9D8F"] },
+  { id:  7, name: "Pomegranate",       c: ["#C1121F","#FF8800","#4361EE","#00B388"] },
+  { id:  8, name: "Spice Route",       c: ["#C0392B","#E67E22","#2980B9","#27AE60"] },
+  { id:  9, name: "Marrakesh",         c: ["#FF3E00","#FF8F00","#0047AB","#009966"] },
+  { id: 10, name: "Baghdad Brick",     c: ["#D84315","#F9A825","#1565C0","#00875A"] },
+  { id: 11, name: "Terracotta",        c: ["#BF3100","#D98200","#1A5FB4","#1B8A50"] },
+  { id: 12, name: "Kilim",             c: ["#D03000","#E08800","#1E4494","#1E8050"] },
+  { id: 13, name: "Pottery Wheel",     c: ["#A62800","#CC7700","#1550A0","#187048"] },
+  // ── balanced warm/cool ──────────────────────────────────────────────────────
+  { id: 14, name: "Arabian Nights",    c: ["#E74C3C","#F39C12","#1565C0","#1ABC9C"] },
+  { id: 15, name: "Cedar Grove",       c: ["#FF4444","#FF9F43","#006CB4","#00C49F"] },
+  { id: 16, name: "Coral Reef",        c: ["#FF6347","#FFA500","#0056A3","#00A86B"] },
+  { id: 17, name: "Istanbul Red",      c: ["#E8453C","#FFAB40","#1976D2","#43A047"] },
+  { id: 18, name: "Beirut Bloom",      c: ["#FF5722","#FFC107","#01579B","#00897B"] },
+  { id: 19, name: "Cairo Gold",        c: ["#FF6D00","#FFC400","#0277BD","#388E3C"] },
+  { id: 20, name: "Mediterranean",     c: ["#E8513C","#F9A825","#006994","#2ECC71"] },
+  // ── blue dominant ───────────────────────────────────────────────────────────
+  { id: 21, name: "Tigris Teal",       c: ["#E8513C","#F0A830","#006064","#00BCD4"] },
+  { id: 22, name: "Mosul Blue",        c: ["#FF4444","#FF9500","#003580","#009E60"] },
+  { id: 23, name: "Cobalt Spice",      c: ["#E84917","#F0A830","#0047AB","#3DC87A"] },
+  { id: 24, name: "Navy Gold",         c: ["#D84315","#FFB300","#0D2B82","#009E60"] },
+  { id: 25, name: "Ocean Fire",        c: ["#E8513C","#FF9800","#0064C8","#00A878"] },
+  // ── teal / emerald dominant ─────────────────────────────────────────────────
+  { id: 26, name: "Oasis",             c: ["#FF5C26","#FFAE00","#005FAD","#009977"] },
+  { id: 27, name: "Palm Garden",       c: ["#E8513C","#F0A830","#0A5F38","#2ECC71"] },
+  { id: 28, name: "Emerald City",      c: ["#D62828","#F4A261","#006994","#00A86B"] },
+  { id: 29, name: "River Green",       c: ["#E0521C","#E09814","#1565C0","#00875A"] },
+  { id: 30, name: "Forest Flame",      c: ["#CC3A1A","#E09000","#005B80","#00804E"] },
+  // ── saturated / design energy ───────────────────────────────────────────────
+  { id: 31, name: "Studio Fire",       c: ["#FF4400","#FFAA00","#0055FF","#00BB55"] },
+  { id: 32, name: "Bold Move",         c: ["#E84040","#F0B240","#4060D2","#40C87A"] },
+  { id: 33, name: "Design Energy",     c: ["#FF5500","#FFB000","#0044DD","#00AA55"] },
+  { id: 34, name: "Craft Mark",        c: ["#D94F00","#E9A000","#0050B0","#009955"] },
+  { id: 35, name: "Build Mode",        c: ["#FF4000","#FFAC00","#0044CC","#00AA44"] },
+  // ── modern product energy ───────────────────────────────────────────────────
+  { id: 36, name: "Figma-ish",         c: ["#FF7262","#FF8800","#1ABCFE","#0ACF83"] },
+  { id: 37, name: "Duolingo Energy",   c: ["#FF4B2B","#FF9B00","#1CB0F6","#58CC02"] },
+  { id: 38, name: "Product Hunt",      c: ["#DA4500","#F09A00","#1050C0","#00A040"] },
+  { id: 39, name: "Launch Pad",        c: ["#F03A00","#F0B000","#0048D4","#00B050"] },
+  { id: 40, name: "Ship It",           c: ["#E84E00","#EDAA00","#1044B8","#00963C"] },
+  // ── place / seasonal ────────────────────────────────────────────────────────
+  { id: 41, name: "Summer Souk",       c: ["#FF6200","#FFD600","#0060AA","#00A850"] },
+  { id: 42, name: "Desert Storm",      c: ["#E85030","#E0A020","#2050C0","#30B060"] },
+  { id: 43, name: "Tigris Warm",       c: ["#D84828","#D89818","#2848C8","#28B058"] },
+  { id: 44, name: "Ancient Iraq",      c: ["#C84020","#C89010","#2040C0","#20A850"] },
+  { id: 45, name: "Baghdad Dusk",      c: ["#E04030","#E09820","#3858D8","#38C068"] },
+  // ── bold & clear ────────────────────────────────────────────────────────────
+  { id: 46, name: "Warm Pop",          c: ["#FF5C00","#FFD000","#0060FF","#00CC66"] },
+  { id: 47, name: "Rich Orange",       c: ["#EE4400","#FFAA00","#1144DD","#00AA55"] },
+  { id: 48, name: "Deep Blue Flame",   c: ["#CC3300","#FF8800","#0033CC","#00AA44"] },
+  { id: 49, name: "Studio Craft",      c: ["#FF4411","#FFBB00","#0055EE","#00BB55"] },
+  { id: 50, name: "Full Circle",       c: ["#E8513C","#F0A830","#2244FF","#11BB66"] },
 ];
 
 // ─── 50 LOGO STYLE MARKS ─────────────────────────────────────────────────────
@@ -77,8 +86,8 @@ const L50: { id: number; name: string; cat: string; fn: MFn }[] = [
 
   { id: 2, name: "Stagger Brick", cat: "Geometric",
     fn: (c, r) => <W>
-      {S(4,12,32,c[0],r)} {S(40,12,32,c[1],r)}
-      {S(-8,44,32,c[2],r)} {S(28,44,32,c[3],r)} {S(64,44,32,c[0],r)}
+      {S(2,12,30,c[0],r,0)} {S(36,12,30,c[1],r,1)}
+      {S(18,46,30,c[2],r,2)} {S(52,46,30,c[3],r,3)}
     </W> },
 
   { id: 3, name: "Diagonal Flow", cat: "Geometric",
@@ -96,20 +105,22 @@ const L50: { id: number; name: string; cat: string; fn: MFn }[] = [
   { id: 5, name: "Ring Orbit", cat: "Geometric",
     fn: (c, r) => <W>
       <g transform="translate(40,40)">
-        {S(-14,-32,28,c[0],r)} {S(6,-14,28,c[1],r)}
-        {S(-34,-14,28,c[2],r)} {S(-14,4,28,c[3],r)}
+        {S(-14,-36,26,c[0],r,0)}
+        {S(10,-14,26,c[1],r,1)}
+        {S(-36,-14,26,c[2],r,2)}
+        {S(-14,10,26,c[3],r,3)}
       </g>
     </W> },
 
   { id: 6, name: "Pinwheel", cat: "Geometric",
-    fn: (c, r) => <W>
+    fn: (c, r) => { const cr = Math.min(r, 6); return <W>
       <g transform="translate(40,40)">
-        <g transform="rotate(0)">{S(-34,-34,32,c[0],r)}</g>
-        <g transform="rotate(90)">{S(-34,-34,32,c[1],r)}</g>
-        <g transform="rotate(180)">{S(-34,-34,32,c[2],r)}</g>
-        <g transform="rotate(270)">{S(-34,-34,32,c[3],r)}</g>
+        <g transform="rotate(0)">{S(-34,-34,30,c[0],cr,0)}</g>
+        <g transform="rotate(90)">{S(-34,-34,30,c[1],cr,1)}</g>
+        <g transform="rotate(180)">{S(-34,-34,30,c[2],cr,2)}</g>
+        <g transform="rotate(270)">{S(-34,-34,30,c[3],cr,3)}</g>
       </g>
-    </W> },
+    </W>; } },
 
   { id: 7, name: "Plus Sign", cat: "Geometric",
     fn: (c, r) => <W>
@@ -119,24 +130,23 @@ const L50: { id: number; name: string; cat: string; fn: MFn }[] = [
 
   { id: 8, name: "Growing Steps", cat: "Geometric",
     fn: (c, r) => <W>
-      {S(2,46,30,c[0],r)} {S(20,28,30,c[1],r)}
-      {S(38,10,30,c[2],r)}
-      {Ci(70,64,12,c[3])}
+      {S(2,50,26,c[0],r,0)} {S(20,32,26,c[1],r,1)}
+      {S(38,14,26,c[2],r,2)} {S(56,50,22,c[3],r,3)}
     </W> },
 
   { id: 9, name: "Overlap Weave", cat: "Geometric",
-    fn: (c, r) => <W>
-      {S(4,4,38,c[0],r)} {S(28,4,38,c[1],r)}
-      {S(4,28,38,c[2],r)} {S(28,28,38,c[3],r)}
-    </W> },
+    fn: (c, r) => { const cr = Math.min(r, 7); return <W>
+      {S(4,4,38,c[0],cr,0)} {S(28,4,38,c[1],cr,1)}
+      {S(4,28,38,c[2],cr,2)} {S(28,28,38,c[3],cr,3)}
+    </W>; } },
 
   { id: 10, name: "Diamond Grid", cat: "Geometric",
-    fn: (c, r) => <W>
+    fn: (c, r) => { const cr = Math.min(r, 5); return <W>
       <g transform="translate(40,40) rotate(45)">
-        {S(-38,-38,34,c[0],r)} {S(4,-38,34,c[1],r)}
-        {S(-38,4,34,c[2],r)} {S(4,4,34,c[3],r)}
+        {S(-38,-38,34,c[0],cr,0)} {S(6,-38,34,c[1],cr,1)}
+        {S(-38,6,34,c[2],cr,2)} {S(6,6,34,c[3],cr,3)}
       </g>
-    </W> },
+    </W>; } },
 
   // ── LETTERFORM MARKS ───────────────────────────────────────────────────────
   { id: 11, name: "Bold i", cat: "Letterform",
@@ -209,9 +219,9 @@ const L50: { id: number; name: string; cat: string; fn: MFn }[] = [
 
   { id: 21, name: "Toggle Switch", cat: "Abstract",
     fn: (c, r) => <W>
-      {Rc(4,22,72,36,c[0],18)}
-      {Ci(22,40,14,c[1])}
-      {S(42,28,24,c[2],r)}
+      {Rc(4,22,72,36,c[0],18,0)}
+      {S(8,26,28,c[1],12,1)}
+      {S(44,26,28,c[2],Math.min(r,10),2)}
     </W> },
 
   { id: 22, name: "Swoosh", cat: "Abstract",
@@ -235,13 +245,11 @@ const L50: { id: number; name: string; cat: string; fn: MFn }[] = [
     </W> },
 
   { id: 25, name: "Zigzag", cat: "Abstract",
-    fn: (c) => <W>
+    fn: (c, r) => { const cr = Math.min(r,4); return <W>
       <polyline points="8,60 24,20 40,60 56,20 72,60"
         stroke={c[0]} strokeWidth="8" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
-      <circle cx="8" cy="60" r="5" fill={c[1]}/>
-      <circle cx="40" cy="60" r="5" fill={c[2]}/>
-      <circle cx="72" cy="60" r="5" fill={c[3]}/>
-    </W> },
+      {S(2,54,12,c[1],cr,0)} {S(34,54,12,c[2],cr,1)} {S(66,54,12,c[3],cr,2)}
+    </W>; } },
 
   { id: 26, name: "Spiral In", cat: "Abstract",
     fn: (c, r) => <W>
@@ -252,35 +260,34 @@ const L50: { id: number; name: string; cat: string; fn: MFn }[] = [
     </W> },
 
   { id: 27, name: "Launch", cat: "Abstract",
-    fn: (c, r) => <W>
-      {S(22,42,36,c[0],r)}
-      <path d="M40,42 L40,10 M32,20 L40,8 L48,20" stroke={c[1]} strokeWidth="6" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
-      {Ci(28,58,8,c[2])} {Ci(52,58,8,c[3])}
-    </W> },
+    fn: (c, r) => { const cr = Math.min(r,6); return <W>
+      {S(24,38,32,c[0],cr,0)}
+      <path d="M40,38 L40,8 M32,18 L40,6 L48,18" stroke={c[1]} strokeWidth="6" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
+      {S(20,56,14,c[2],cr,1)} {S(46,56,14,c[3],cr,2)}
+    </W>; } },
 
-  { id: 28, name: "Ripple", cat: "Abstract",
-    fn: (c) => <W>
-      {Ci(40,40,36,c[0]+"33")} {Ci(40,40,26,c[1]+"55")}
-      {Ci(40,40,16,c[2]+"99")} {Ci(40,40,8,c[3])}
-    </W> },
+  { id: 28, name: "Ripple Squares", cat: "Abstract",
+    fn: (c, r) => { const cr = Math.min(r,8); return <W>
+      {S(6,6,68,c[0],cr+4,0)} {S(15,15,50,c[1],cr+2,1)}
+      {S(24,24,32,c[2],cr,2)} {S(32,32,16,c[3],Math.min(cr,5),3)}
+    </W>; } },
 
   // ── NEGATIVE SPACE ─────────────────────────────────────────────────────────
   { id: 29, name: "Square Frame", cat: "Negative",
-    fn: (c, r) => <W>
-      <rect x="8" y="8" width="64" height="64" rx={r} fill={c[0]}/>
-      <rect x="20" y="20" width="40" height="40" rx={Math.max(0,r-4)} fill="transparent"/>
-      {S(8,8,26,c[1],r)} {S(46,8,26,c[2],r)}
-      {S(8,46,26,c[3],r)} {S(46,46,26,c[0],r)}
-    </W> },
+    fn: (c, r) => { const cr = Math.min(r, 8); return <W>
+      {S(4,4,34,c[0],cr,0)} {S(42,4,34,c[1],cr,1)}
+      {S(4,42,34,c[2],cr,2)} {S(42,42,34,c[3],cr,3)}
+      <rect x="18" y="18" width="44" height="44" rx={cr} fill="#F4F2EC"/>
+    </W>; } },
 
   { id: 30, name: "Cutout Grid", cat: "Negative",
-    fn: (c, r) => <W>
-      <rect x="4" y="4" width="72" height="72" rx={r} fill={c[0]}/>
-      <rect x="16" y="16" width="22" height="22" rx={Math.max(0,r-4)} fill="white"/>
-      <rect x="42" y="16" width="22" height="22" rx={Math.max(0,r-4)} fill="white"/>
-      <rect x="16" y="42" width="22" height="22" rx={Math.max(0,r-4)} fill="white"/>
-      <rect x="42" y="42" width="22" height="22" rx={Math.max(0,r-4)} fill="white"/>
-    </W> },
+    fn: (c, r) => { const cr = Math.min(r, 8); return <W>
+      <rect x="4" y="4" width="72" height="72" rx={cr} fill={c[0]}/>
+      <rect x="16" y="16" width="22" height="22" rx={Math.max(0,cr-3)} fill="#F4F2EC"/>
+      <rect x="42" y="16" width="22" height="22" rx={Math.max(0,cr-3)} fill="#F4F2EC"/>
+      <rect x="16" y="42" width="22" height="22" rx={Math.max(0,cr-3)} fill="#F4F2EC"/>
+      <rect x="42" y="42" width="22" height="22" rx={Math.max(0,cr-3)} fill="#F4F2EC"/>
+    </W>; } },
 
   { id: 31, name: "Halved Square", cat: "Negative",
     fn: (c, r) => <W>
@@ -373,10 +380,10 @@ const L50: { id: number; name: string; cat: string; fn: MFn }[] = [
     </W> },
 
   { id: 42, name: "Expanding", cat: "Motion",
-    fn: (c, r) => <W>
-      {S(28,28,24,c[0],r)} {S(18,18,44,c[1],Math.max(0,r-2)+"" as unknown as number,2)}
-      {S(8,8,64,c[2],Math.max(0,r-4),3)}
-    </W> },
+    fn: (c, r) => { const cr = Math.min(r, 8); return <W>
+      {S(8,8,64,c[0],cr+4,0)} {S(18,18,44,c[1],cr+2,1)}
+      {S(28,28,24,c[2],cr,2)} {S(34,34,12,c[3],Math.min(cr,4),3)}
+    </W>; } },
 
   // ── BADGE MARKS ────────────────────────────────────────────────────────────
   { id: 43, name: "Circle Badge", cat: "Badge",
@@ -531,7 +538,7 @@ export default function ExplorePage() {
   const [activeStyle, setActiveStyle] = useState<number | null>(null);
   const [modalStyle, setModalStyle]   = useState<number | null>(null);
 
-  const radius = Math.round((softness / 100) * 16);
+  const radius = Math.round((softness / 100) * 10);
 
   const applyPalette = useCallback((idx: number) => {
     setColors(P50[idx].c);
